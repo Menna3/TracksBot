@@ -1,46 +1,53 @@
 { 
    "0":{ 
-      "tag":"fleetOwnerName",
+      "tag":"ownerName",
       "questions":[ 
          "What is your full name?",
          "Please give me your full name"
       ]
    },
    "1":{ 
+      "tag":"ownerEmail",
+      "questions":[ 
+         "What is your email?",
+         "Please give me your email"
+      ]
+   },
+   "2":{ 
       "tag":"phoneNumber",
       "questions":[ 
          "What is your phone number?",
          "Please give me your phone number"
       ]
    },
-   "2":{ 
+   "3":{ 
       "tag":"companyName",
       "questions":[ 
          "What is your company name?",
          "And your company name?"
       ]
    },
-   "3":{ 
+   "4":{ 
       "tag":"fleetSize",
       "questions":[ 
          "Okay, now how many trucks are there in your fleet?",
          "Great, now tell me how many trucks are there in your fleet?"
       ]
    },
-   "4":{ 
+   "5":{ 
       "tag":"wheelRimSize",
       "questions":[ 
          "What is the truck rim size?"
       ]
    },
-   "5":{ 
+   "6":{ 
       "tag":"wheelTyreSize",
       "questions":[ 
          "And the tyre size?",
          "What is the tyre size?"
       ]
    },
-   "6":{ 
+   "7":{ 
       "tag":"engineType",
       "questions":[ 
          "Now the truck engine type?",

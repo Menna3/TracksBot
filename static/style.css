@@ -67,6 +67,10 @@ body{
 .comment-box-main{
   background: #CA1D5F;
 }
+.chatbox{
+    max-width: 600px; 
+    max-height: 530px;
+}
 @media (min-width: 320px) and (max-width: 480px){
   .comments .comment h4 {
     font-size: 12px;

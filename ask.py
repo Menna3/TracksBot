@@ -22,14 +22,6 @@ def home():
 @app.route('/start')
 def start():
     return "Hello, my name is Tracks. I will help you register your fleet by asking you some questions (type quit to stop)!"
-
-#@app.route('/ask/name')
-#def askName(): 
-#    return random.choice(list(questions["0"]["questions"]))
-#
-#@app.route('/get/name')
-#def getName():
-#    return input()
     
 @app.route('/ask/<questionNumber>')
 def ask(questionNumber):   
@@ -41,30 +33,36 @@ def answer(questionNumber, ownerId):
     try: #if file is not empty (first owner to insert)
         allResponses = openPickle("pickleFiles/all_responses.pickle")
         currentIds = list(allResponses.keys())
+        
         if ownerId in currentIds:
             newOwnerId = ownerId
+            answer = request.args.get('msg')
+            response_dict[questions[questionNumber]["tag"]] = answer
+            allResponses[newOwnerId].update(response_dict)
         else:
             newOwnerId = str(int(list(allResponses.keys())[-1]) + 1)
+            answer = request.args.get('msg')
+            response_dict[questions[questionNumber]["tag"]] = answer
+            allResponses[newOwnerId] = response_dict
     
     except: #pickle file is empty
         newOwnerId = "1"
         allResponses = {}
+        answer = request.args.get('msg')
+        response_dict[questions[questionNumber]["tag"]] = answer
+        allResponses[newOwnerId] = response_dict
             
-        
-#    answer = "any answer"
-    answer = request.args.get('msg')
-    response_dict[questions[questionNumber]["tag"]] = answer
-
-    allResponses[newOwnerId] = response_dict
+    
     filename = 'pickleFiles/all_responses.pickle'
     outfile = open(filename,'wb')
     pickle.dump(allResponses,outfile)
     outfile.close()
     
-    pickleFile = openPickle("pickleFiles/all_responses.pickle")
-    return str(pickleFile)
+    return newOwnerId
+
+#    pickleFile = openPickle("pickleFiles/all_responses.pickle")
+#    return str(pickleFile)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
