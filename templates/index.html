@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/0.12.14/vue.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+    
+  <body>
+	<div class="container">
+		<div class="row mt-5">
+			<div class="col-md-6 offset-md-3 col-sm-6 offset-sm-3 col-12 comments-main pt-4 rounded">
+
+				<ul class="p-0">
+					<ul class="p-0">
+						<li>
+							<div class="row comments mb-2">								
+								<div class="col-md-8 offset-1 col-sm-8 offset-1 col-8 offset-1 comment rounded mb-2">
+									<h4 class="m-0">You</h4>
+<!--								    <time class="text-white ml-3">1 min ago</time>-->
+								    <like></like>
+								    <p class="mb-0 text-white">Thank you for visiting from an unknown location.</p>
+								</div>
+                                <div class="col-md-2 col-sm-2 col-2 text-center user-img">
+							    	<img id="profile-photo" src="http://nicesnippets.com/demo/man04.png" class="rounded-circle"/>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</ul>
+				<ul class="p-0">
+					<li>
+						<div class="row comments mb-2">
+							<div class="col-md-2 col-sm-2 col-3 text-center user-img">
+						    	<img id="profile-photo" src="http://nicesnippets.com/demo/man01.png" class="rounded-circle" />
+							</div>
+							<div class="col-md-8 col-sm-8 col-8 comment rounded mb-2">
+								<h4 class="m-0">Tracks</h4>
+<!--							    <time class="text-white ml-3">1 month ago</time>-->
+							    <like></like>
+							    <p class="mb-0 text-white">Thank you for visiting all the way from New York.</p>
+							</div>
+						</div>
+					</li>
+				</ul>
+				
+                
+                <div class="row comment-box-main p-3 rounded-bottom">
+			  		<div class="col-md-9 col-sm-9 col-9 pr-0 comment-box">
+					  <input id="textInput" type="text" name="textInput" class="form-control" placeholder="Respond ..." />
+			  		</div>
+			  		<div class="col-md-3 col-sm-2 col-2 pl-0 text-center send-btn">
+			  			<input id="bottonInput" type="submit" value="Send" class="btn btn-info">
+			  		</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  </body>
+  
+  <script>
+       function getBotResponse(){
+           var rawText = $("#textInput").val();
+           var userHtml ='<p class="userText"><span>' +rawText + '</span></p>';
+           $("#textInput").val("");
+           $("#chatbox").append(userHtml);
+//               document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+
+           $.get("/answer/1/8", {msg: rawText}).done(function(data) {
+//                  var botHtml = '<p class="botText><span>' + data + '</span></p>';
+//                  $("#chatbox").append(botHtml);
+//               document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+          });
+
+       }
+       $("#textInput").keypress(function(e) {
+          if(e.which == 13){
+           getBotResponse();
+        }});
+      
+       $("#buttonInput").click(function(){
+            getBotResponse();
+       });
+
+  </script>
+</html>

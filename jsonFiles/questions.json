@@ -1,0 +1,50 @@
+{ 
+   "0":{ 
+      "tag":"fleetOwnerName",
+      "questions":[ 
+         "What is your full name?",
+         "Please give me your full name"
+      ]
+   },
+   "1":{ 
+      "tag":"phoneNumber",
+      "questions":[ 
+         "What is your phone number?",
+         "Please give me your phone number"
+      ]
+   },
+   "2":{ 
+      "tag":"companyName",
+      "questions":[ 
+         "What is your company name?",
+         "And your company name?"
+      ]
+   },
+   "3":{ 
+      "tag":"fleetSize",
+      "questions":[ 
+         "Okay, now how many trucks are there in your fleet?",
+         "Great, now tell me how many trucks are there in your fleet?"
+      ]
+   },
+   "4":{ 
+      "tag":"wheelRimSize",
+      "questions":[ 
+         "What is the truck rim size?"
+      ]
+   },
+   "5":{ 
+      "tag":"wheelTyreSize",
+      "questions":[ 
+         "And the tyre size?",
+         "What is the tyre size?"
+      ]
+   },
+   "6":{ 
+      "tag":"engineType",
+      "questions":[ 
+         "Now the truck engine type?",
+         "What is the engine type?"
+      ]
+   }
+}
