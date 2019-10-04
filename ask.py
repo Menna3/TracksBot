@@ -24,8 +24,22 @@ def start():
     return "Hello, my name is Tracks. I will help you register your fleet by asking you some questions (type quit to stop)!"
     
 @app.route('/ask/<questionNumber>')
-def ask(questionNumber):   
-    return random.choice(list(questions[questionNumber]["questions"]))
+def ask(questionNumber):
+    questionType = questions[questionNumber]["type"]
+    if questionType == "basic" or questionType == "fleet":
+        return random.choice(list(questions[questionNumber]["questions"]))
+    elif questionType == "truck":
+        if questionNumber == "5":
+            return str(["Okay* now I will ask you some questions about the specifications of your trucks.",
+                   "If you have any group of trucks with the exact same specifications* group them and tell me the number of groups.",
+                   "Let me explain more.",
+                   "If you have 9 trucks* 4 are exactly the same* and 5 are the same* then you have 2 groups. If all trucks are exactly the same then you have 1 group.",
+                   "Now tell me how many groups of trucks do you have?"])
+        else:
+            questionNumber = str(int(questionNumber)-1)
+            return random.choice(list(questions[questionNumber]["questions"]))
+            
+        
 
 @app.route('/answer/<questionNumber>/<ownerId>')
 def answer(questionNumber, ownerId):

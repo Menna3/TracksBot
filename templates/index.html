@@ -38,30 +38,20 @@
   
   <script>
       
-      var numberOfQuestions = 8;
+      var numberOfQuestions = 8;      
       var currentQuestion = 0;
       
       $( document ).ready(function() {          
           setTimeout(function(){
             $.get("/start", function(data){
-                botHtml = '<li><div class="row comments mb-2">'+
-							'<div class="col-md-2 col-sm-2 col-3 text-center user-img">'+
-						    	'<img id="profile-photo" src="http://nicesnippets.com/demo/man01.png" class="rounded-circle"/>'+
-							'</div>'+
-							'<div class="col-md-8 offset-1 col-sm-8 offset-1 col-8 offset-1 comment rounded mb-2">'+
-								'<h4 class="m-0">Tracks</h4>'+
-							    '<time class="text-white ml-3">1 month ago</time>'+
-							    '<like></like>'+
-							    '<p class="mb-0 text-white">'+data+'</p>'+
-							'</div>'+
-						'</div>'+
-					'</li>';
-                $("#chatBox").append(botHtml);
+                postReply("bot", data);
+                $('#textInput').prop("disabled", true);
+                $('#buttonInput').prop("disabled", true);
                 
                 //ask questions
                 setTimeout(function(){
-                    if (currentQuestion < numberOfQuestions) {
-                        getBotQuestion(currentQuestion)
+                    if (currentQuestion <= numberOfQuestions) {
+                        getBotQuestion(currentQuestion);
                     }                  
                 }, 1300);
               });
@@ -76,7 +66,106 @@
           
           var url = "/ask/" + questionNumber;
           $.get(url, function(data){
-            botHtml = '<li><div class="row comments mb-2">'+
+            if (questionNumber == "5"){
+                textList = data.replace('[', '').replace(']', '').split(',');
+                timeDelayList = [1000, 3000, 3000, 1000, 5000]; //adjust it better than that to be more natural
+                
+                var i = 0;
+                function myLoop(textList){
+                    
+                    setTimeout(function () {
+                        data = textList[i].replace('*', ',').replace("'", "").replace("'", "").replace('*', ',');
+                        postReply("bot", data);
+                        i++;
+                        if (i < textList.length) {
+                           myLoop(textList);
+                           $('#textInput').prop("disabled", true);
+                           $('#buttonInput').prop("disabled", true);
+                        }
+                     }, timeDelayList[i], textList)
+                }
+                
+                myLoop(textList);
+
+            }else{
+                postReply("bot", data);
+            } 
+            
+            
+                
+            $('#textInput').prop("disabled", false);
+            $('#buttonInput').prop("disabled", false);
+            var input = document.getElementById('textInput');
+            setInputPos(input, input.value.length);
+                
+              });
+      }
+      
+       function ownerAnswer(questionNumber, ownerId){
+           var rawText = $("#textInput").val();
+           postReply("owner", rawText);
+
+           url = "/answer/" + questionNumber + "/" + $('#ownerId').val();;
+           $.get(url, {msg: rawText}).done(function(data) {
+               $('#ownerId').attr('value', data);
+               
+               //ask questions
+                setTimeout(function(){
+                    if (currentQuestion <= numberOfQuestions) {
+                        getBotQuestion(currentQuestion)
+                    }                  
+                }, 1000);
+               document.getElementById('textInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+          });
+
+       }
+      
+      function setInputSelection(input, startPos, endPos) {
+            if (input.setSelectionRange) {
+                input.focus();
+                input.setSelectionRange(startPos, endPos);
+            } else if (input.createTextRange) {
+                var range = input.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', endPos);
+                range.moveStart('character', startPos);
+                range.select();
+            }
+        }
+
+        function setInputPos(input, pos) {
+            setInputSelection(input, pos, pos);
+        }
+      
+       $("#textInput").keypress(function(e) {
+          if(e.which == 13){
+              if(currentQuestion == "5"){
+                  //get the group number
+                  var groupsNumber = $("#textInput").val();
+                  postReply("owner", groupsNumber);
+                  
+                  //loop over truck quesions
+                  currentQuestion += 1;
+                  groupsNumber = parseInt(groupsNumber, 10);
+                  for(var i = 0; i<groupsNumber; i++){
+                      getBotQuestion(currentQuestion);
+                      currentQuestion += 1;
+                  }
+              }else{
+                ownerAnswer(currentQuestion, $('#ownerId').val());
+                currentQuestion += 1;
+              }
+           
+        }});
+      
+       $("#buttonInput").click(function(){
+            ownerAnswer(currentQuestion, $('#ownerId').val());
+            currentQuestion += 1;
+       });
+      
+      function postReply(replyer, data){
+          if(replyer == "bot"){
+                botHtml = '<li><div class="row comments mb-2">'+
                         '<div class="col-md-2 col-sm-2 col-2 text-center user-img">'+
                             '<img id="profile-photo" src="http://nicesnippets.com/demo/man01.png" class="rounded-circle"/>'+
                         '</div>'+
@@ -87,60 +176,33 @@
                             '<p class="mb-0 text-white">'+data+'</p>'+
                         '</div>'+
                     '</div></li>';
-            $("#chatBox").append(botHtml);
-            document.getElementById('textInput').scrollIntoView({block: 'start', behavior: 'smooth'});
-                
-            $('#textInput').prop("disabled", false);
-            $('#buttonInput').prop("disabled", false);
-                
-              });
-      }
-      
-       function ownerAnswer(questionNumber, ownerId){
-           var rawText = $("#textInput").val();
-           var ownerHtml ='<li><div class="row comments mb-2">	'+							
-                    '<div class="col-md-8 offset-1 col-sm-8 offset-1 col-8 offset-1 comment rounded mb-2">'+
-                        '<h4 class="m-0">You</h4>'+
-                        '<time class="text-white ml-3">1 min ago</time>'+
-                        '<like></like>'+
-                        '<p class="mb-0 text-white">'+ rawText +'</p>'+
-                    '</div>'+
-                    '<div class="col-md-2 col-sm-2 col-2 text-center user-img">'+
-                        '<img id="profile-photo" src="http://nicesnippets.com/demo/man04.png" class="rounded-circle"/>'+
-                    '</div>'+
-                '</div></li>';
-           $("#textInput").val("");
-           $("#chatBox").append(ownerHtml);
+                $("#chatBox").append(botHtml);    
+          
+              $('#textInput').prop("disabled", false);
+              $('#buttonInput').prop("disabled", false);
+              var input = document.getElementById('textInput')
+              setInputPos(input, input.value.length);
+          }else{
+              var ownerHtml ='<li><div class="row comments mb-2">	'+							
+                        '<div class="col-md-8 offset-1 col-sm-8 offset-1 col-8 offset-1 comment rounded mb-2">'+
+                            '<h4 class="m-0">You</h4>'+
+                            '<time class="text-white ml-3">1 min ago</time>'+
+                            '<like></like>'+
+                            '<p class="mb-0 text-white">'+ data +'</p>'+
+                        '</div>'+
+                        '<div class="col-md-2 col-sm-2 col-2 text-center user-img">'+
+                            '<img id="profile-photo" src="http://nicesnippets.com/demo/man04.png" class="rounded-circle"/>'+
+                        '</div>'+
+                    '</div></li>';
+               $("#textInput").val("");
+               $("#chatBox").append(ownerHtml);
+              
+              $('#textInput').prop("disabled", true);
+              $('#buttonInput').prop("disabled", true);
+          }
            
-           $('#textInput').prop("disabled", true);
-           $('#buttonInput').prop("disabled", true);
            document.getElementById('textInput').scrollIntoView({block: 'start', behavior: 'smooth'});
-
-           url = "/answer/" + questionNumber + "/" + $('#ownerId').val();;
-           $.get(url, {msg: rawText}).done(function(data) {
-               $('#ownerId').attr('value', data);
-               
-               //ask questions
-                setTimeout(function(){
-                    if (currentQuestion < numberOfQuestions) {
-                        getBotQuestion(currentQuestion)
-                    }                  
-                }, 1000);
-               document.getElementById('textInput').scrollIntoView({block: 'start', behavior: 'smooth'});
-          });
-
-       }
-      
-       $("#textInput").keypress(function(e) {
-          if(e.which == 13){
-           ownerAnswer(currentQuestion, $('#ownerId').val());
-           currentQuestion += 1;
-        }});
-      
-       $("#buttonInput").click(function(){
-            ownerAnswer(currentQuestion, $('#ownerId').val());
-            currentQuestion += 1;
-       });
+      }
 
   </script>
 </html>

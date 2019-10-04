@@ -1,6 +1,7 @@
 { 
    "0":{ 
       "tag":"ownerName",
+      "type": "basic",
       "questions":[ 
          "What is your full name?",
          "Please give me your full name"
@@ -8,6 +9,7 @@
    },
    "1":{ 
       "tag":"ownerEmail",
+      "type": "basic",
       "questions":[ 
          "What is your email?",
          "Please give me your email"
@@ -15,6 +17,7 @@
    },
    "2":{ 
       "tag":"phoneNumber",
+      "type": "basic",
       "questions":[ 
          "What is your phone number?",
          "Please give me your phone number"
@@ -22,6 +25,7 @@
    },
    "3":{ 
       "tag":"companyName",
+      "type": "basic",
       "questions":[ 
          "What is your company name?",
          "And your company name?"
@@ -29,6 +33,7 @@
    },
    "4":{ 
       "tag":"fleetSize",
+      "type": "fleet",
       "questions":[ 
          "Okay, now how many trucks are there in your fleet?",
          "Great, now tell me how many trucks are there in your fleet?"
@@ -36,12 +41,14 @@
    },
    "5":{ 
       "tag":"wheelRimSize",
+      "type": "truck",
       "questions":[ 
          "What is the truck rim size?"
       ]
    },
    "6":{ 
       "tag":"wheelTyreSize",
+      "type": "truck",
       "questions":[ 
          "And the tyre size?",
          "What is the tyre size?"
@@ -49,6 +56,7 @@
    },
    "7":{ 
       "tag":"engineType",
+      "type": "truck",
       "questions":[ 
          "Now the truck engine type?",
          "What is the engine type?"
