@@ -1,0 +1,25 @@
+{ 
+   "0":{ 
+      "tag":"wheelRimSize",
+      "type": "truck",
+      "questions":[ 
+         "What is the truck rim size?"
+      ]
+   },
+   "1":{ 
+      "tag":"wheelTyreSize",
+      "type": "truck",
+      "questions":[ 
+         "And the tyre size?",
+         "What is the tyre size?"
+      ]
+   },
+   "2":{ 
+      "tag":"engineType",
+      "type": "truck",
+      "questions":[ 
+         "Now the truck engine type?",
+         "What is the engine type?"
+      ]
+   }
+}

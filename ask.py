@@ -9,6 +9,9 @@ app = Flask(__name__)
 with open("jsonFiles/questions.json") as file:
     questions = json.load(file)
     
+with open("jsonFiles/truckQuestions.json") as file:
+    truckQuestions = json.load(file)
+    
 def openPickle(filename):
     infile = open(filename,'rb')
     new_dict = pickle.load(infile)
@@ -25,24 +28,35 @@ def start():
     
 @app.route('/ask/<questionNumber>')
 def ask(questionNumber):
-    questionType = questions[questionNumber]["type"]
-    if questionType == "basic" or questionType == "fleet":
+    if int(questionNumber) < 5:
         return random.choice(list(questions[questionNumber]["questions"]))
-    elif questionType == "truck":
-        if questionNumber == "5":
+    elif questionNumber == "5":
             return str(["Okay* now I will ask you some questions about the specifications of your trucks.",
                    "If you have any group of trucks with the exact same specifications* group them and tell me the number of groups.",
                    "Let me explain more.",
                    "If you have 9 trucks* 4 are exactly the same* and 5 are the same* then you have 2 groups. If all trucks are exactly the same then you have 1 group.",
                    "Now tell me how many groups of trucks do you have?"])
-        else:
-            questionNumber = str(int(questionNumber)-1)
-            return random.choice(list(questions[questionNumber]["questions"]))
+#    else:
+#        questionNumber = str(int(questionNumber)-1)
+#        return random.choice(list(questions[questionNumber]["questions"]))
             
-        
 
-@app.route('/answer/<questionNumber>/<ownerId>')
-def answer(questionNumber, ownerId):
+@app.route("/ask/trucks/<questionNumber>")
+def askTrucks(questionNumber):
+    return random.choice(list(truckQuestions[questionNumber]["questions"]))
+
+
+@app.route("/answer/trucks", methods=['POST'])
+def answerTrucks():
+    req_data = request.get_json()
+    answer = req_data["1"]
+    return str(answer)
+        
+@app.route("/answer/<questionNumber>/<ownerId>/", defaults={"groupsNumber": None})
+@app.route('/answer/<questionNumber>/<ownerId>/<groupsNumber>')
+def answer(questionNumber, ownerId, groupsNumber):
+    if int(questionNumber) >= 5:
+        questionNumber = str(int(questionNumber) - 1)
     response_dict = {}
     try: #if file is not empty (first owner to insert)
         allResponses = openPickle("pickleFiles/all_responses.pickle")
