@@ -125,6 +125,10 @@ def answerTrucks(fleetId, groupsNumber):
         
     return fleetId
 #    return str(allResponses)
+
+@app.route('/get/fleet/<fleetId>')
+def getFleet(fleetId):
+    return "fleet"
     
 
 #    pickleFile = openPickle("pickleFiles/all_responses.pickle")
