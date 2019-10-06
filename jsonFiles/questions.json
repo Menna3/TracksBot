@@ -40,7 +40,7 @@
       ]
    },
    "5":{ 
-      "tag":"truckQuestions",
+      "tag":"groupNumber",
       "type": "truck"
    }
 }

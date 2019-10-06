@@ -1,12 +1,19 @@
 { 
    "0":{ 
+      "tag":"trucksInGroup",
+      "type": "truck",
+      "questions":[ 
+         "How many trucks in group number "
+      ]
+   },
+    "1":{ 
       "tag":"wheelRimSize",
       "type": "truck",
       "questions":[ 
          "What is the truck rim size?"
       ]
    },
-   "1":{ 
+   "2":{ 
       "tag":"wheelTyreSize",
       "type": "truck",
       "questions":[ 
@@ -14,7 +21,7 @@
          "What is the tyre size?"
       ]
    },
-   "2":{ 
+   "3":{ 
       "tag":"engineType",
       "type": "truck",
       "questions":[ 
