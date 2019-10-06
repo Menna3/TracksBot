@@ -1,7 +1,11 @@
 var numberOfQuestions = 8;    
 var currentQuestion = 0;
 
-$( document ).ready(function() {          
+
+$( document ).ready(function() {
+
+
+    
   setTimeout(function(){
     $.get("/start", function(data){
         postReply("bot", data);
@@ -16,6 +20,10 @@ $( document ).ready(function() {
         }, 1300);
       });
   }, 600);
+    
+    
+    
+    
 
 
 });
@@ -77,13 +85,13 @@ function getBotTruckQuestion(questionNumber){
   });
 }
 
-function ownerAnswer(questionNumber, ownerId){
+function ownerAnswer(questionNumber, fleetId){
    var rawText = $("#textInput").val();
    postReply("owner", rawText);
 
-   url = "/answer/" + questionNumber + "/" + $('#ownerId').val();;
+   url = "/answer/" + questionNumber + "/" + $('#fleetId').val();;
    $.get(url, {msg: rawText}).done(function(data) {
-       $('#ownerId').attr('value', data);
+       $('#fleetId').attr('value', data);
 
        //ask questions
         setTimeout(function(){
@@ -119,36 +127,24 @@ $("#textInput").keypress(function(e) {
           var trucksObj = {};
           var truckReplies = {};
           var numberOfTruckQuestions = 3;
-
-          var groupsNumber = $("#textInput").val();
-          postReply("owner", groupsNumber);
-          groupsNumber = parseInt(groupsNumber, 10);
-
-          var i = 0;
-        function loopOverGroups(groupsNumber){
-            var truckQuestion = 0;
-            postReply("bot", "What is the number of trucks in group number " + (i+1).toString());
-            var numberOfTrucksInGroup = $("#textInput").val();
-
-            $("#textInput").on('keypress', function(event) {
-                if (event.which == 13) {
-                    console.log(i);
-                    postReply("owner", numberOfTrucksInGroup);
+          
+          var ind = 0;
+          function loopOverGroups(groupsNumber){
+              var truckQuestion = 0;
+              postReply("bot", "What is the number of trucks in group number " + (ind+1).toString());
+              var numberOfTrucksInGroup = $("#textInput").val();
+              console.log(ind);
+              postReply("owner", numberOfTrucksInGroup);
 //                            loopOverTruckQuestion(truckQuestion);
 
 //                            trucksObj[numberOfTrucksInGroup] = truckReplies;
-                    i++;
+              ind++;
 
-                    if(i < groupsNumber){
-                    loopOverGroups(groupsNumber);
-                }
-                }
-
-
-            });
-
-
-        }
+              if(ind < groupsNumber){
+                loopOverGroups(groupsNumber);
+              }
+         }
+          
         var j = 0;
         function loopOverTruckQuestion(truckQuestion){
             getBotTruckQuestion(truckQuestion);
@@ -171,28 +167,32 @@ $("#textInput").keypress(function(e) {
 
         }
 
+        var groupsNumber = $("#textInput").val();
+        postReply("owner", groupsNumber);
+        groupsNumber = parseInt(groupsNumber, 10);
         loopOverGroups(groupsNumber);
 
-//                  $.ajax({
-//                    url: '/answer/trucks',
-//                    type: 'post',
-//                    dataType: 'json',
-//                    contentType: 'application/json',
-//                    success: function (data) {
-//        //                $('#target').html(data.msg);
-//                    },
-//                    data: JSON.stringify(trucksObj)
-//                });
+
+//        $.ajax({
+//            url: '/answer/trucks',
+//            type: 'post',
+//            dataType: 'json',
+//            contentType: 'application/json',
+//            success: function (data) {
+//                
+//            },
+//            data: JSON.stringify(trucksObj)
+//        });
 
       }else{
-        ownerAnswer(currentQuestion, $('#ownerId').val());
+        ownerAnswer(currentQuestion, $('#fleetId').val());
         currentQuestion += 1;
       }
 
 }});
 
 $("#buttonInput").click(function(){
-    ownerAnswer(currentQuestion, $('#ownerId').val());
+    ownerAnswer(currentQuestion, $('#fleetId').val());
     currentQuestion += 1;
 });
 
