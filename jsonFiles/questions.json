@@ -1,6 +1,6 @@
 { 
    "0":{ 
-      "tag":"ownerName",
+      "tag":"owner_name",
       "type": "basic",
       "questions":[ 
          "What is your full name?",
@@ -8,7 +8,7 @@
       ]
    },
    "1":{ 
-      "tag":"ownerEmail",
+      "tag":"owner_email",
       "type": "basic",
       "questions":[ 
          "What is your email?",
@@ -16,7 +16,7 @@
       ]
    },
    "2":{ 
-      "tag":"phoneNumber",
+      "tag":"phone_number",
       "type": "basic",
       "questions":[ 
          "What is your phone number?",
@@ -24,7 +24,7 @@
       ]
    },
    "3":{ 
-      "tag":"companyName",
+      "tag":"company_name",
       "type": "basic",
       "questions":[ 
          "What is your company name?",
@@ -32,7 +32,7 @@
       ]
    },
    "4":{ 
-      "tag":"fleetSize",
+      "tag":"fleet_size",
       "type": "fleet",
       "questions":[ 
          "Okay, now how many trucks are there in your fleet?",
@@ -40,7 +40,7 @@
       ]
    },
    "5":{ 
-      "tag":"groupNumber",
+      "tag":"group_number",
       "type": "truck"
    }
 }

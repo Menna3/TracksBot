@@ -121,14 +121,51 @@ def answerTrucks(fleetId, groupsNumber):
     if fleetId in currentIds:
         response_dict["trucks"] = allTrucksResponses
         allResponses[fleetId].update(response_dict)
+    
+    filename = 'pickleFiles/all_responses.pickle'
+    outfile = open(filename,'wb')
+    pickle.dump(allResponses,outfile)
+    outfile.close()
+    
+    def getFleet(fleetId):
+        allResponses = openPickle("pickleFiles/all_responses.pickle")
+
+        trucksList = ["Thank you for registering your fleet in Tracks.", "Your Fleet ID is: "+fleetId,
+                    "And here is the full list of your trucks"]
+        keyss = []
+        trucks = allResponses[fleetId]["trucks"]
+        truckSpecs = ''
+        for key in trucks:
+            truckSpecs = ''
+            truckSpecs += "Truck " + key + ": " 
+            for key2 in trucks[key]:
+                truckSpecs += key2.replace("_", " ").title() + ": " + trucks[key][key2] + " "
+
+            trucksList.append(truckSpecs)
+        return str(trucksList)
+
+    fleetData = getFleet(fleetId)
         
-        
-    return fleetId
+    return json.dumps(fleetData)
 #    return str(allResponses)
 
-@app.route('/get/fleet/<fleetId>')
-def getFleet(fleetId):
-    return "fleet"
+@app.route('/fleet/trucks/<fleetId>')
+def getFleetdd(fleetId):
+    allResponses = openPickle("pickleFiles/all_responses.pickle")
+    
+    trucksList = ["Thank you for registering your fleet in Tracks.", "Your Fleet ID is: "+fleetId,
+                "And here is the full list of your trucks"]
+    keyss = []
+    trucks = allResponses[fleetId]["trucks"]
+    truckSpecs = ''
+    for key in trucks:
+        truckSpecs = ''
+        truckSpecs += "Truck " + key + ": " 
+        for key2 in trucks[key]:
+            truckSpecs += key2.replace("_", " ").title() + ": " + trucks[key][key2] + " "
+
+        trucksList.append(truckSpecs)
+    return str(trucksList)
     
 
 #    pickleFile = openPickle("pickleFiles/all_responses.pickle")

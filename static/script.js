@@ -1,4 +1,3 @@
-
 var numberOfQuestions = 6;    
 var currentQuestion = 0;
 var allTruckQuestions = 0;
@@ -114,7 +113,7 @@ function ownerAnswer(questionNumber, fleetId){
         setTimeout(function(){
             if (currentTruckQuestion < sizeOfTruckQuesitons) {
                 var question = allTruckQuestions[currentTruckQuestion];
-//                            question = question.toString().replace("'","").repalce("'", "");
+                question = (question.toString().replace("'","")).replace("'","");
                 getBotTruckQuestion(question);
                 currentTruckQuestion++;
             }else{
@@ -126,6 +125,24 @@ function ownerAnswer(questionNumber, fleetId){
                     dataType: 'json',
                     contentType: 'application/json',
                     success: function (data) {
+                        replies = data.replace('[', '').replace(']', '').split(',');
+                        
+                        var i = 0;
+                        function myLoop(replies){
+
+                            setTimeout(function () {
+                                postReply("bot", (replies[i].replace("'", "").replace("'", "")));
+                                i++;
+                                if (i < replies.length) {
+                                   myLoop(replies);
+                                   $('#textInput').prop("disabled", true);
+                                   $('#buttonInput').prop("disabled", true);
+                                }
+                             }, 1000, replies)
+                        }
+
+                        myLoop(replies);
+                                
                     },
                     data: JSON.stringify(truckReplies)
                 });
@@ -223,4 +240,3 @@ function setInputSelection(input, startPos, endPos) {
 function setInputPos(input, pos) {
     setInputSelection(input, pos, pos);
 }
-
