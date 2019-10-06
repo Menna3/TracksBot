@@ -137,6 +137,11 @@ function ownerAnswer(questionNumber, fleetId){
                                    myLoop(replies);
                                    $('#textInput').prop("disabled", true);
                                    $('#buttonInput').prop("disabled", true);
+                                }else{ //end of conversation
+                                    postReply("bot", "Do you want to register another fleet?")
+                                    $('#textInput').prop("disabled", true);
+                                    $('#buttonInput').prop("disabled", true);
+                                    postYesOrNo();
                                 }
                              }, 1000, replies)
                         }
@@ -222,6 +227,21 @@ function postReply(replyer, data){
   }
 
    document.getElementById('textInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+}
+
+function postYesOrNo(){
+    botHtml = '<li><div class="row comments mb-2">'+
+                   '<button type="button" onClick="window.location.reload();" class="col-4 offset-1 btn comment mb-0 text-white">Yes</button>'+
+                   '<button type="button" class="col-4 offset-1 btn comment mb-0 text-white">No</button>'+
+                   '</div></li>';
+    
+    $("#chatBox").append(botHtml);    
+
+    $('#textInput').prop("disabled", true);
+    $('#buttonInput').prop("disabled", true);
+    var input = document.getElementById('textInput')
+    setInputPos(input, input.value.length);
+    document.getElementById('textInput').scrollIntoView({block: 'start', behavior: 'smooth'});
 }
 
 function setInputSelection(input, startPos, endPos) {
