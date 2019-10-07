@@ -19,6 +19,11 @@ def openPickle(filename):
     infile.close()
     return new_dict
 
+def writeInPickle(filename, dictonary):
+    outfile = open(filename,'wb')
+    pickle.dump(dictonary,outfile)
+    outfile.close()
+
 #------------------------------------------------------ROUTES------------------------------------------------------#
 @app.route('/')
 def home():
@@ -81,9 +86,7 @@ def answer(questionNumber, fleetId):
             
     
     filename = 'pickleFiles/all_responses.pickle'
-    outfile = open(filename,'wb')
-    pickle.dump(allResponses,outfile)
-    outfile.close()
+    writeInPickle(filename, allResponses)
     
     return newFleetId
 
@@ -123,9 +126,7 @@ def answerTrucks(fleetId, groupsNumber):
         allResponses[fleetId].update(response_dict)
     
     filename = 'pickleFiles/all_responses.pickle'
-    outfile = open(filename,'wb')
-    pickle.dump(allResponses,outfile)
-    outfile.close()
+    writeInPickle(filename, allResponses)
     
     def getFleet(fleetId):
         allResponses = openPickle("pickleFiles/all_responses.pickle")
@@ -167,8 +168,31 @@ def getFleetdd(fleetId):
         trucksList.append(truckSpecs)
     return str(trucksList)
     
-
-#    pickleFile = openPickle("pickleFiles/all_responses.pickle")
+@app.route('/conversation', methods=['POST'])
+def saveConversation():
+    conversation = request.get_json()
+    conversation_dict = {}
+    allConversations_dict = {}
+    
+    i, j = 0, 0 
+    for i in range(0, len(conversation), 2):
+        conversation_dict[str(j)] = [conversation[i], conversation[i+1]]
+        i += 1
+        j += 1
+    
+    try: #if file is not empty (first owner to insert)
+        allConversations = openPickle("pickleFiles/all_conversations.pickle")
+        conversationId = str(int(list(allConversations.keys())[-1]) + 1)
+        allConversations_dict[conversationId] = conversation_dict
+    except:
+        conversationId = "1"
+        allConversations_dict[conversationId] = conversation_dict
+        
+    filename = 'pickleFiles/all_conversations.pickle'
+    writeInPickle(filename, allConversations_dict)
+        
+    return conversationId
+#    pickleFile = openPickle("pickleFiles/all_conversations.pickle")
 #    return str(pickleFile)
 
 
