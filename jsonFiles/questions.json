@@ -1,7 +1,7 @@
 { 
    "0":{ 
       "tag":"owner_name",
-      "type": "basic",
+      "entity": "PERSON",
       "questions":[ 
          "What is your full name?",
          "Please give me your full name"
@@ -9,7 +9,7 @@
    },
    "1":{ 
       "tag":"owner_email",
-      "type": "basic",
+      "entity": "EMAIL",
       "questions":[ 
          "What is your email?",
          "Please give me your email"
@@ -17,7 +17,7 @@
    },
    "2":{ 
       "tag":"phone_number",
-      "type": "basic",
+      "entity": "CARDINAL",
       "questions":[ 
          "What is your phone number?",
          "Please give me your phone number"
@@ -25,7 +25,7 @@
    },
    "3":{ 
       "tag":"company_name",
-      "type": "basic",
+      "entity": "COMPANY",
       "questions":[ 
          "What is your company name?",
          "And your company name?"
@@ -33,7 +33,7 @@
    },
    "4":{ 
       "tag":"fleet_size",
-      "type": "fleet",
+      "entity": "CARDINAL",
       "questions":[ 
          "Okay, now how many trucks are there in your fleet?",
          "Great, now tell me how many trucks are there in your fleet?"
@@ -41,6 +41,6 @@
    },
    "5":{ 
       "tag":"group_number",
-      "type": "truck"
+      "entity": "CARDINAL"
    }
 }

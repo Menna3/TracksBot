@@ -1,21 +1,21 @@
 { 
    "0":{ 
       "tag":"trucks_in_group",
-      "type": "truck",
+      "entity": "CARDINAL",
       "questions":[ 
          "How many trucks in group number "
       ]
    },
     "1":{ 
       "tag":"wheel_rim_size",
-      "type": "truck",
+      "entity": "CARDINAL",
       "questions":[ 
          "What is the truck rim size?"
       ]
    },
    "2":{ 
       "tag":"wheel_tire_size",
-      "type": "truck",
+      "entity": "CARDINAL",
       "questions":[ 
          "And the tire size?",
          "What is the tire size?"
@@ -23,7 +23,7 @@
    },
    "3":{ 
       "tag":"engine_type",
-      "type": "truck",
+      "entity": "ENGINE",
       "questions":[ 
          "Now the truck engine type?",
          "What is the engine type?"

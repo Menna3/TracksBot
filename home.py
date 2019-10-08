@@ -3,6 +3,8 @@ import random
 import json
 import pickle
 import numpy
+import spacy
+import re
 
 app = Flask(__name__)
 
@@ -23,8 +25,38 @@ def writeInPickle(filename, dictonary):
     outfile = open(filename,'wb')
     pickle.dump(dictonary,outfile)
     outfile.close()
+    
+nlp = spacy.load('en_core_web_sm')
+
+def getAnswerEntities(answer):
+    answerEntities = {}
+    doc = nlp(answer)
+    for ent in doc.ents:
+        answerEntities[ent.label_] = ent.text
+    return answerEntities
+
+def isEmail(answer):
+    doc = nlp(answer)
+    expression = r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    for match in re.finditer(expression, doc.text):
+        start, end = match.span()
+        span = doc.char_span(start, end)
+        # This is a Span object or None if match doesn't map to valid token sequence
+        if span is not None:
+            return 1
+    return 0
 
 #------------------------------------------------------ROUTES------------------------------------------------------#
+@app.route('/spacy')
+def asdf():
+    x = getAnswerEntities("4 groups")
+#    if x["PERSON"] == None:
+#        return "no"
+#    else:
+#        return x["PERSON"]
+    return str(x)
+
+
 @app.route('/')
 def home():
     return render_template("index.html")
@@ -49,14 +81,20 @@ def ask(questionNumber):
 
 @app.route("/truck/questions/<groupNumber>")
 def allTrucksQuestionInGroup(groupNumber):
-    allQuestions = []
-    for i in range(int(groupNumber)):
-        for j in range(4):
-            question = random.choice(list(truckQuestions[str(j)]["questions"]));
-            if question == "How many trucks in group number ":
-                question = question + str(i+1); 
-            allQuestions.append(question)
-    return str(allQuestions)
+    groupNumberEntities = getAnswerEntities(groupNumber)
+    if groupNumberEntities['CARDINAL'] != None:
+        groupNumber = groupNumberEntities['CARDINAL']
+        
+        allQuestions = []
+        for i in range(int(groupNumber)):
+            for j in range(4):
+                question = random.choice(list(truckQuestions[str(j)]["questions"]));
+                if question == "How many trucks in group number ":
+                    question = question + str(i+1); 
+                allQuestions.append(question)
+        return str(allQuestions)
+    else:
+        return "I didn't get your answer, please say that again."
 
 
 @app.route('/answer/<questionNumber>/<fleetId>')
@@ -69,26 +107,80 @@ def answer(questionNumber, fleetId):
         if fleetId in currentIds:
             newFleetId = fleetId
             answer = request.args.get('msg')
-            response_dict[questions[questionNumber]["tag"]] = answer
-            allResponses[newFleetId].update(response_dict)
+            
+            entityType = questions[questionNumber]["entity"]
+            if entityType == "EMAIL":
+                if isEmail(answer) == 1:
+                    response_dict[questions[questionNumber]["tag"]] = answer
+                    allResponses[newFleetId].update(response_dict)
+                else:
+                    return "Please give me a valid email."
+            elif entityType == 'COMPANY':
+                response_dict[questions[questionNumber]["tag"]] = answer
+                allResponses[newFleetId] = response_dict
+            else:
+                answerEntities = getAnswerEntities(answer)
+                return str(answerEntities)
+                if answerEntities[entityType] != None:
+                    response_dict[questions[questionNumber]["tag"]] = answerEntities[entityType]
+                    allResponses[newFleetId].update(response_dict)
+                else:
+                    return "I didn't get your answer, please say that again."
+            
         else:
             newFleetId = str(int(list(allResponses.keys())[-1]) + 1)
             answer = request.args.get('msg')
-            response_dict[questions[questionNumber]["tag"]] = answer
-            allResponses[newFleetId] = response_dict
+            entityType = questions[questionNumber]["entity"]
+            
+            if entityType == "EMAIL":
+                if isEmail(answer) == 1:
+                    response_dict[questions[questionNumber]["tag"]] = answer
+                    allResponses[newFleetId] = response_dict
+                else:
+                    return "Please give me a valid email."
+            elif entityType == 'COMPANY':
+                response_dict[questions[questionNumber]["tag"]] = answer
+                allResponses[newFleetId] = response_dict
+            else:
+                answerEntities = getAnswerEntities(answer)
+
+                if answerEntities[entityType] != None:
+                    response_dict[questions[questionNumber]["tag"]] = answerEntities[entityType]
+                    allResponses[newFleetId] = response_dict
+                else:
+                    return "I didn't get your answer, please say that again."
     
     except: #pickle file is empty
         newFleetId = "1"
         allResponses = {}
         answer = request.args.get('msg')
-        response_dict[questions[questionNumber]["tag"]] = answer
-        allResponses[newFleetId] = response_dict
+        entityType = questions[questionNumber]["entity"]
+        if entityType == "EMAIL":
+            if isEmail(answer) == 1:
+                response_dict[questions[questionNumber]["tag"]] = answer
+                allResponses[newFleetId] = response_dict
+            else:
+                return "Please give me a valid email."
+
+        elif entityType == 'COMPANY':
+            response_dict[questions[questionNumber]["tag"]] = answer
+            allResponses[newFleetId] = response_dict
+        else:
+            answerEntities = getAnswerEntities(answer)
+
+            if answerEntities[entityType] != None:
+                response_dict[questions[questionNumber]["tag"]] = answerEntities[entityType]
+                allResponses[newFleetId] = response_dict
+            else:
+                return "I didn't get your answer, please say that again."
             
     
     filename = 'pickleFiles/all_responses.pickle'
     writeInPickle(filename, allResponses)
     
     return newFleetId
+#    pickleFile = openPickle("pickleFiles/all_responses.pickle")
+#    return str(pickleFile)
 
 
 @app.route('/answer/trucks/<fleetId>/<groupsNumber>', methods=['POST'])
