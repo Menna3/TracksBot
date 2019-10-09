@@ -1,4 +1,5 @@
-var numberOfQuestions = 6;
+var numberOfQuestions = 5;
+var numberOfTruckQuestions = 4;
 var currentQuestion = 0;
 var allTruckQuestions = 0;
 var currentTruckQuestion = 0;
@@ -6,6 +7,7 @@ var sizeOfTruckQuesitons = 0;
 var groupsNumber = 0;
 var truckReplies = [];
 var allConversation = [];
+var botReplies = [];
 
 
 $(document).ready(function() {
@@ -15,7 +17,6 @@ $(document).ready(function() {
             postReply("bot", data);
             $('#textInput').prop("disabled", true);
             $('#buttonInput').prop("disabled", true);
-
             //ask questions
             setTimeout(function() {
                 if (currentQuestion == 0) {
@@ -24,6 +25,10 @@ $(document).ready(function() {
             }, 13); //1300
         });
     }, 6); //600
+    
+    $.get("/bot/replies", function(data) {
+        botReplies = data
+    });
 
 });
 
@@ -33,7 +38,7 @@ function getBotQuestion(questionNumber) {
 
     var url = "/ask/" + questionNumber;
     $.get(url, function(data) {
-        if (questionNumber == "5") {
+        if (questionNumber == numberOfQuestions-1) {
             textList = data.replace('[', '').replace(']', '').split(',');
             timeDelayList = [1, 3, 3, 1, 5]; //adjust it better than that to be more natural
 
@@ -69,17 +74,15 @@ function getBotQuestion(questionNumber) {
     });
 }
 
-function getBotTruckQuestion(truckQuestion) {
+function getBotTruckQuestion(currentTruckQuestion) {
     $('#textInput').prop("disabled", true);
     $('#buttonInput').prop("disabled", true);
-
-
-    postReply("bot", truckQuestion);
-
-    $('#textInput').prop("disabled", false);
-    $('#buttonInput').prop("disabled", false);
-    var input = document.getElementById('textInput');
-    setInputPos(input, input.value.length);
+    
+    var url = "/ask/truck/" + currentTruckQuestion + "/" + $('#fleetId').val();
+    $.get(url, function(data) {
+        repeatQuestion(data)
+        
+    });
 
 }
 
@@ -91,102 +94,200 @@ function repeatQuestion(data){
     setInputPos(input, input.value.length);
 }
 
+function answerTruckQuestions(currentTruckQuestion, answer){
+    url = "/answer/trucks/" + $('#fleetId').val() + "/" + $('#truckId').val() + "/" + currentTruckQuestion;
+    $.get(url, {
+        msg: answer
+    }).done(function(data) {
+        if(botReplies.includes(data)){
+            repeatQuestion(data)
+        }else{
+            $('#truckId').attr('value', data);
+            //ask questions
+            setTimeout(function() {
+                    getBotTruckQuestion(currentTruckQuestion);
+
+            }, 10); //1000
+            document.getElementById('textInput').scrollIntoView({
+                block: 'start',
+                behavior: 'smooth'
+            });
+        }
+
+    });
+}
+
 function ownerAnswer(questionNumber, fleetId) {
-    if (currentQuestion == 5) {
+    if (currentQuestion == numberOfQuestions-1) {
         groupsNumber = $("#textInput").val();
         postReply("owner", groupsNumber);
-
-        url = "truck/questions/" + groupsNumber;
+        sizeOfTruckQuesitons = parseInt(groupsNumber) * numberOfTruckQuestions;
+        url = "truck/questions/" + groupsNumber + "/" + $('#fleetId').val();
         $.get(url).done(function(data) {
-            if(data === "I didn't get your answer, please say that again."){
+            
+            if(botReplies.includes(data)){
                 repeatQuestion(data);
-            }else{
-                allTruckQuestions = data.replace('[', '').replace(']', '').split(',');
-                sizeOfTruckQuesitons = allTruckQuestions.length;
+            }else{ //get first truck question
+//                console.log(currentTruckQuestion);                
+//                url = "/answer/trucks/" + $('#fleetId').val() + "/" + $('#truckId').val() + "/" + currentTruckQuestion;
+//                $.get(url, {
+//                    msg: groupsNumber
+//                }).done(function(data) {
+//                    if(botReplies.includes(data)){
+//                        repeatQuestion(data)
+//                    }else{
+                        console.log(currentTruckQuestion);
+//                        $('#truckId').attr('value', data);
+                        //ask questions
+                        setTimeout(function() {
+                            getBotTruckQuestion(currentTruckQuestion);
+                            currentTruckQuestion++;
+                            currentQuestion++;
 
-                //ask questions
-                setTimeout(function() {
-                    if (currentTruckQuestion < sizeOfTruckQuesitons) {
-                        var question = allTruckQuestions[currentTruckQuestion];
-                        question = (question.toString().replace("'", "")).replace("'", "");
-                        getBotTruckQuestion(question);
-                        currentTruckQuestion++;
-                    }
-                }, 10); //1000
-                document.getElementById('textInput').scrollIntoView({
-                    block: 'start',
-                    behavior: 'smooth'
-                });
+                        }, 10); //1000
+                        document.getElementById('textInput').scrollIntoView({
+                            block: 'start',
+                            behavior: 'smooth'
+                        });
+//                    }
+
+//                });  
+                
             }
             
         });
-    }else if (currentQuestion > 5) {
+    }else if (currentQuestion > numberOfQuestions-1) {
         var answer = $("#textInput").val();
         postReply("owner", answer);
+        
+        if(currentTruckQuestion < sizeOfTruckQuesitons){
+            
+//                answerTruckQuestions(currentTruckQuestion, groupsNumber);
+            
+            url = "/answer/trucks/" + $('#fleetId').val() + "/" + $('#truckId').val() + "/" + currentTruckQuestion;
+            $.get(url, {
+                msg: answer
+            }).done(function(data) {
+                if(botReplies.includes(data)){
+                    repeatQuestion(data)
+                }else{
+                    console.log(currentTruckQuestion);
+                    $('#truckId').attr('value', data);
+                    //ask questions
+                    setTimeout(function() {
+                        getBotTruckQuestion(currentTruckQuestion);
+                        currentTruckQuestion++;
+                        currentQuestion++;
 
-        truckReplies.push(answer);
+                    }, 10); //1000
+                    document.getElementById('textInput').scrollIntoView({
+                        block: 'start',
+                        behavior: 'smooth'
+                    });
+                }
 
-        //ask questions
-        setTimeout(function() {
-            if (currentTruckQuestion < sizeOfTruckQuesitons) {
-                var question = allTruckQuestions[currentTruckQuestion];
-                question = (question.toString().replace("'", "")).replace("'", "");
-                getBotTruckQuestion(question);
-                currentTruckQuestion++;
-            } else {
-                //              console.log("finished "); //send the ajax with all the responses
-                url = "/answer/trucks/" + $('#fleetId').val() + "/" + groupsNumber;
-                $.ajax({
-                    url: url,
-                    type: 'post',
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    success: function(data) {
-                        replies = data.replace('[', '').replace(']', '').split(',');
+            });
+        }else{
+            
+            
+            $.ajax({
+                url: "/conversation/" + $('#fleetId').val(),
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(data) {
+                    replies = data.replace('[', '').replace(']', '').split(',');
+                    var i = 0;
+                    function myLoop(replies) {
 
-                        var i = 0;
+                        setTimeout(function() {
+                            postReply("bot", (replies[i].replace("'", "").replace("'", "")));
+                            i++;
+                            if (i < replies.length) {
+                                myLoop(replies);
+                                $('#textInput').prop("disabled", true);
+                                $('#buttonInput').prop("disabled", true);
+                            } else { //end of conversation
+                                postReply("bot", "Do you want to register another fleet?")
+                                $('#textInput').prop("disabled", true);
+                                $('#buttonInput').prop("disabled", true);
+                                postYesOrNo();
+                            }
+                        }, 10, replies) //1000
+                    }
 
-                        function myLoop(replies) {
-
-                            setTimeout(function() {
-                                postReply("bot", (replies[i].replace("'", "").replace("'", "")));
-                                i++;
-                                if (i < replies.length) {
-                                    myLoop(replies);
-                                    $('#textInput').prop("disabled", true);
-                                    $('#buttonInput').prop("disabled", true);
-                                } else { //end of conversation
-                                    $.ajax({
-                                        url: "/conversation",
-                                        type: 'post',
-                                        dataType: 'json',
-                                        contentType: 'application/json',
-                                        success: function(data) {
-
-                                        },
-                                        data: JSON.stringify(allConversation)
-                                    });
-
-                                    postReply("bot", "Do you want to register another fleet?")
-                                    $('#textInput').prop("disabled", true);
-                                    $('#buttonInput').prop("disabled", true);
-                                    postYesOrNo();
-                                }
-                            }, 10, replies) //1000
-                        }
-
-                        myLoop(replies);
-
-                    },
-                    data: JSON.stringify(truckReplies)
-                });
-            }
-
-        }, 10); //1000
-        document.getElementById('textInput').scrollIntoView({
-            block: 'start',
-            behavior: 'smooth'
-        });
+                    myLoop(replies);
+                },
+                data: JSON.stringify(allConversation)
+            });   
+            
+        }
+        
+        ////////////////////////////////
+        
+//        truckReplies.push(answer);
+//
+//        //ask questions
+//        setTimeout(function() {
+//            if (currentTruckQuestion < sizeOfTruckQuesitons) {
+//                var question = allTruckQuestions[currentTruckQuestion];
+//                question = (question.toString().replace("'", "")).replace("'", "");
+//                getBotTruckQuestion(question);
+//                currentTruckQuestion++;
+//            } else {
+//                //              console.log("finished "); //send the ajax with all the responses
+//                url = "/answer/trucks/" + $('#fleetId').val() + "/" + groupsNumber;
+//                $.ajax({
+//                    url: url,
+//                    type: 'post',
+//                    dataType: 'json',
+//                    contentType: 'application/json',
+//                    success: function(data) {
+//                        replies = data.replace('[', '').replace(']', '').split(',');
+//
+//                        var i = 0;
+//
+//                        function myLoop(replies) {
+//
+//                            setTimeout(function() {
+//                                postReply("bot", (replies[i].replace("'", "").replace("'", "")));
+//                                i++;
+//                                if (i < replies.length) {
+//                                    myLoop(replies);
+//                                    $('#textInput').prop("disabled", true);
+//                                    $('#buttonInput').prop("disabled", true);
+//                                } else { //end of conversation
+//                                    $.ajax({
+//                                        url: "/conversation",
+//                                        type: 'post',
+//                                        dataType: 'json',
+//                                        contentType: 'application/json',
+//                                        success: function(data) {
+//
+//                                        },
+//                                        data: JSON.stringify(allConversation)
+//                                    });
+//
+//                                    postReply("bot", "Do you want to register another fleet?")
+//                                    $('#textInput').prop("disabled", true);
+//                                    $('#buttonInput').prop("disabled", true);
+//                                    postYesOrNo();
+//                                }
+//                            }, 10, replies) //1000
+//                        }
+//
+//                        myLoop(replies);
+//
+//                    },
+//                    data: JSON.stringify(truckReplies)
+//                });
+//            }
+//
+//        }, 10); //1000
+//        document.getElementById('textInput').scrollIntoView({
+//            block: 'start',
+//            behavior: 'smooth'
+//        });
 
     } else{
         var rawText = $("#textInput").val();
@@ -198,15 +299,14 @@ function ownerAnswer(questionNumber, fleetId) {
             msg: rawText
         }).done(function(data) {
             $('#fleetId').attr('value', data);
-            if(data === "I didn't get your answer, please say that again." || data === "Please give me a valid email."){
+            if(botReplies.includes(data)){
                 repeatQuestion(data)
             }else{
-                currentQuestion += 1
+                currentQuestion += 1;
                 //ask questions
                 setTimeout(function() {
-                    if (currentQuestion < 6) {
-                        getBotQuestion(currentQuestion)
-                    }
+                    getBotQuestion(currentQuestion);
+                    
                 }, 10); //1000
                 document.getElementById('textInput').scrollIntoView({
                     block: 'start',
@@ -299,6 +399,27 @@ function postYesOrNo() {
         block: 'start',
         behavior: 'smooth'
     });
+}
+
+function showTyping(){
+    botHtml = '<li id="bot-typing"><div class="row comments mb-2">' +
+            '<div class="col-md-2 col-sm-2 col-2 text-center user-img">' +
+            '<img id="profile-photo" src="http://nicesnippets.com/demo/man01.png" class="rounded-circle"/>' +
+            '</div>' +
+            '<div class="col-md-8 offset-1 col-sm-8 offset-1 col-8 offset-1 comment rounded mb-2">' +
+            '<h4 class="m-0">...</h4>' +
+            '</div>' +
+            '</div></li>';
+        $("#chatBox").append(botHtml);
+
+        $('#textInput').prop("disabled", false);
+        $('#buttonInput').prop("disabled", false);
+        var input = document.getElementById('textInput')
+        setInputPos(input, input.value.length);
+}
+
+function hideTyping(){
+    document.getElementById("bot-typing").remove();
 }
 
 function setInputSelection(input, startPos, endPos) {

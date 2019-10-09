@@ -16,14 +16,6 @@
       ]
    },
    "2":{ 
-      "tag":"phone_number",
-      "entity": "CARDINAL",
-      "questions":[ 
-         "What is your phone number?",
-         "Please give me your phone number"
-      ]
-   },
-   "3":{ 
       "tag":"company_name",
       "entity": "COMPANY",
       "questions":[ 
@@ -31,7 +23,7 @@
          "And your company name?"
       ]
    },
-   "4":{ 
+   "3":{ 
       "tag":"fleet_size",
       "entity": "CARDINAL",
       "questions":[ 
@@ -39,7 +31,7 @@
          "Great, now tell me how many trucks are there in your fleet?"
       ]
    },
-   "5":{ 
+   "4":{ 
       "tag":"group_number",
       "entity": "CARDINAL"
    }

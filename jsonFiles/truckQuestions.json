@@ -23,7 +23,7 @@
    },
    "3":{ 
       "tag":"engine_type",
-      "entity": "ENGINE",
+      "entity": "CARDINAL",
       "questions":[ 
          "Now the truck engine type?",
          "What is the engine type?"
