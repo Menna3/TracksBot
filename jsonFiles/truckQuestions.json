@@ -22,7 +22,7 @@
       ]
    },
    "3":{ 
-      "tag":"engine_type",
+      "tag":"engine_capacity",
       "entity": "CARDINAL",
       "questions":[ 
          "Now the truck engine capacity?",
