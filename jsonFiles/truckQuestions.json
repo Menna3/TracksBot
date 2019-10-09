@@ -25,8 +25,8 @@
       "tag":"engine_type",
       "entity": "CARDINAL",
       "questions":[ 
-         "Now the truck engine type?",
-         "What is the engine type?"
+         "Now the truck engine capacity?",
+         "What is the engine capacity?"
       ]
    }
 }

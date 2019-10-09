@@ -1,0 +1,17 @@
+{ 
+   "wrong_entity":{ 
+      "replies":[ 
+         "I didn't get your answer, would you please say that again?",
+         "I didn't get your answer, please say that again.",
+         "Sorry? I didn't get that.",
+         "Would you please say that again?"
+      ]
+   },
+    "wrong_email":{
+      "replies":[ 
+         "This looks like an invalid email. Please give me another one.",
+         "Please make sure your email is correct.",
+         "Please give me a valid email."
+      ]
+   }
+}
