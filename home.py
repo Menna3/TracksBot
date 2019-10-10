@@ -7,19 +7,21 @@ import re
 import os
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 #----------------------------------------------------FUNCTIONS----------------------------------------------------#
-with open("jsonFiles/questions.json") as file:
+ubuntuPath = "/var/www/FlaskApps/TracksBot/"
+with open(ubuntuPath+"jsonFiles/questions.json") as file:
     questions = json.load(file)
     
-with open("jsonFiles/truckQuestions.json") as file:
+with open(ubuntuPath+"jsonFiles/truckQuestions.json") as file:
     truckQuestions = json.load(file)
     
-with open("jsonFiles/botReplies.json") as file:
+with open(ubuntuPath+"jsonFiles/botReplies.json") as file:
     botReplies = json.load(file)
 
 def openTempTruckQuestions(filename):
-    with open("jsonFiles/temp/" + filename) as file:
+    with open(ubuntuPath+"jsonFiles/temp/" + filename) as file:
         tempTruckQuestions = json.load(file)
     return tempTruckQuestions
     
@@ -120,7 +122,7 @@ def allTrucksQuestionInGroup(groupNumber, fleetId):
 def answer(questionNumber, fleetId):
     response_dict = {}
     try: #if file is not empty (first owner to insert)
-        allResponses = openPickle("pickleFiles/all_responses.pickle")
+        allResponses = openPickle(ubuntuPath+"pickleFiles/all_responses.pickle")
         currentIds = list(allResponses.keys())
 
         if fleetId in currentIds:
@@ -194,7 +196,7 @@ def answer(questionNumber, fleetId):
                 return random.choice(list(botReplies["wrong_entity"]["replies"]))
             
     
-    filename = 'pickleFiles/all_responses.pickle'
+    filename = ubuntuPath+'pickleFiles/all_responses.pickle'
     writeInPickle(filename, allResponses)
     
     return newFleetId
@@ -208,7 +210,7 @@ def answerTrucks(fleetId, truckId, truckQuestionNumber):
     allTrucksResponse_dict = {}
     truck_dict = {}
     response_dict = {}
-    allResponses = openPickle("pickleFiles/all_responses.pickle")
+    allResponses = openPickle(ubuntuPath+"pickleFiles/all_responses.pickle")
     truckQuestions = openTempTruckQuestions(fleetId+'_temp.json')
 
     try: #if response had trucks before
@@ -250,7 +252,7 @@ def answerTrucks(fleetId, truckId, truckQuestionNumber):
             return random.choice(list(botReplies["wrong_entity"]["replies"]))
          
     
-    filename = 'pickleFiles/all_responses.pickle'
+    filename = ubuntuPath+'pickleFiles/all_responses.pickle'
     writeInPickle(filename, allResponses)
     
     return truckId
@@ -269,7 +271,7 @@ def saveConversation(fleetId):
         j += 1
         
     try: #if file is not empty
-        allConversations = openPickle("pickleFiles/all_conversations.pickle")
+        allConversations = openPickle(ubuntuPath+"pickleFiles/all_conversations.pickle")
         conversationId = str(int(list(allConversations.keys())[-1]) + 1)
         allConversations_dict[conversationId] = conversation_dict
         allConversations.update(allConversations_dict)
@@ -278,11 +280,11 @@ def saveConversation(fleetId):
         allConversations_dict[conversationId] = conversation_dict
         allConversations = allConversations_dict
         
-    filename = 'pickleFiles/all_conversations.pickle'
+    filename = ubuntuPath+'pickleFiles/all_conversations.pickle'
     writeInPickle(filename, allConversations)
     
     def getFleet(fleetId):
-        allResponses = openPickle("pickleFiles/all_responses.pickle")
+        allResponses = openPickle(ubuntuPath+"pickleFiles/all_responses.pickle")
 
         trucksList = ["Thank you for registering your fleet in Tracks.", "Your Fleet ID is: "+fleetId,
                     "And here is the full list of your trucks"]
@@ -307,7 +309,7 @@ def saveConversation(fleetId):
  
 @app.route("/read")
 def readFiles():
-    pickleFile = openPickle("pickleFiles/all_conversations.pickle")
+    pickleFile = openPickle(ubuntuPath+"pickleFiles/all_conversations.pickle")
     return str(pickleFile)
 
 
